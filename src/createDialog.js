@@ -12,7 +12,9 @@ angular.module('fundoo.services', []).factory('createDialog', ["$document", "$co
       backdropClass: "modal-backdrop",
       backdropCancel: true,
       footerTemplate: null,
+      hideFooter:false,
       modalClass: "modal",
+      cancelOnEsc:true,
       css: {
         top: '100px',
         left: '30%',
@@ -37,9 +39,7 @@ angular.module('fundoo.services', []).factory('createDialog', ["$document", "$co
       var idAttr = options.id ? ' id="' + options.id + '" ' : '';
       var defaultFooter = '<button class="btn" ng-click="$modalCancel()">{{$modalCancelLabel}}</button>' +
         '<button class="btn btn-primary" ng-click="$modalSuccess()">{{$modalSuccessLabel}}</button>';
-      var footerTemplate = '<div class="modal-footer">' +
-        (options.footerTemplate || defaultFooter) +
-        '</div>';
+      var footerTemplate = options.hideFooter ? '' : '<div class="modal-footer">' + (options.footerTemplate || defaultFooter) + '</div>';
       var modalBody = (function(){
         if(options.template){
           if(angular.isString(options.template)){
@@ -82,7 +82,7 @@ angular.module('fundoo.services', []).factory('createDialog', ["$document", "$co
       backdropEl.addClass('fade in');
 
       var handleEscPressed = function (event) {
-        if (event.keyCode === 27) {
+        if (event.keyCode === 27 && options.cancelOnEsc) {
           scope.$modalCancel();
         }
       };
@@ -114,7 +114,7 @@ angular.module('fundoo.services', []).factory('createDialog', ["$document", "$co
       };
       scope.$modalSuccessLabel = options.success.label;
       scope.$modalCancelLabel = options.cancel.label;
-      
+
       if (options.controller) {
         locals = angular.extend({$scope: scope}, passedInLocals);
         ctrl = $controller(options.controller, locals);
