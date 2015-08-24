@@ -110,9 +110,14 @@ angular.module('fundoo.services', []).factory('createDialog', ["$document", "$co
       scope.$modalSuccess = function () {
         var callFn = options.success.fn || closeFn;
         var ret = callFn.call(this);
-        console.log(ret);
-        if (ret!==false) {
-          scope.$modalClose();
+        if (typeof ret.then === 'function') {
+          ret.then(function(result){
+            if (result!==false) { scope.$modalClose(); }
+          })
+        }else{
+          if (ret!==false) {
+            scope.$modalClose();
+          }
         }
       };
       scope.$modalSuccessLabel = options.success.label;
